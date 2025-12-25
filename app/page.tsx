@@ -105,7 +105,7 @@ export default async function HomePage() {
             {/* 🔹 IMAGE CONTAINER */}
             <div
               className="
-                aspect-[16/10]
+                aspect-16/10
                 w-full
                 rounded-2xl
                 bg-white/5
