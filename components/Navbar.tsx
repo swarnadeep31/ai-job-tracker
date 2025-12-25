@@ -2,40 +2,50 @@
 
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
   const { data: session, status } = useSession();
+  const pathname = usePathname();
+
+  const linkClass = (path: string) =>
+    `text-sm transition ${
+      pathname === path
+        ? "text-white font-medium"
+        : "text-gray-400 hover:text-white"
+    }`;
 
   return (
     <nav className="sticky top-0 z-50 border-b border-white/10 bg-black/80 backdrop-blur">
-      <div className="mx-auto max-w-7xl px-6 h-16 flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="text-xl font-bold text-white">
-          JobTrackr
-        </Link>
+      <div className="mx-auto max-w-7xl px-6 h-16 grid grid-cols-3 items-center">
+        {/* LEFT: Brand */}
+        <div className="flex justify-start">
+          <Link href="/" className="text-xl font-bold text-white">
+            JobTrackr
+          </Link>
+        </div>
 
-        {/* Navigation */}
-        <div className="flex items-center gap-6">
-          {/* Show ONLY when logged in */}
+        {/* CENTER: Navigation */}
+        <div className="flex justify-center gap-8">
+          <Link href="/" className={linkClass("/")}>
+            Home
+          </Link>
+
           {session && (
             <>
-              <Link
-                href="/jobs"
-                className="text-sm text-gray-300 hover:text-white transition"
-              >
+              <Link href="/jobs" className={linkClass("/jobs")}>
                 Jobs
               </Link>
 
-              <Link
-                href="/dashboard"
-                className="text-sm text-gray-300 hover:text-white transition"
-              >
+              <Link href="/dashboard" className={linkClass("/dashboard")}>
                 Dashboard
               </Link>
             </>
           )}
+        </div>
 
-          {/* Auth Button */}
+        {/* RIGHT: Auth */}
+        <div className="flex justify-end">
           {status === "loading" ? null : session ? (
             <button
               onClick={() => signOut()}

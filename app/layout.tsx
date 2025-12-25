@@ -3,6 +3,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Provider from "@/components/Providers";
+import { Toaster } from "react-hot-toast";
+import AnimatedBackground from "@/components/AnimatedBackground";
+import Footer from "@/components/Footer";
 
  // ✅ IMPORT ADDED
 
@@ -31,9 +34,21 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white`}
       >
+        <AnimatedBackground/>
         <Provider>
           <Navbar />
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              style: {
+                background: "#111",
+                color: "#fff",
+                border: "1px solid rgba(255,255,255,0.1)",
+              },
+            }}
+          />
           <main>{children}</main>
+          <Footer/>
         </Provider>
       </body>
     </html>

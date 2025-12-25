@@ -1,8 +1,11 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { headers } from "next/headers";
-import StatCard from "@/components/StatusCard";
 
+import StatCard from "@/components/StatusCard";
+import DashboardChart from "@/components/DashboardChart";
+import MotionWrapper from "@/components/MontionWrapper";
+import Section from "@/components/Section";
 
 async function getStats() {
   const headersList = await headers();
@@ -21,16 +24,24 @@ export default async function DashboardPage() {
   const stats = await getStats();
 
   return (
-    <div className="p-6 space-y-8">
-      <h1 className="text-3xl font-semibold text-white">Dashboard</h1>
+    <MotionWrapper>
+      <Section>
+        <div className="p-6 space-y-8">
+          <h1 className="text-3xl font-semibold text-white">Dashboard</h1>
 
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <StatCard title="Total" value={stats.total} />
-        <StatCard title="Applied" value={stats.applied} />
-        <StatCard title="Interview" value={stats.interview} />
-        <StatCard title="Offer" value={stats.offer} />
-        <StatCard title="Rejected" value={stats.rejected} />
-      </div>
-    </div>
+          {/* Stat Cards */}
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <StatCard title="Total" value={stats.total} />
+            <StatCard title="Applied" value={stats.applied} />
+            <StatCard title="Interview" value={stats.interview} />
+            <StatCard title="Offer" value={stats.offer} />
+            <StatCard title="Rejected" value={stats.rejected} />
+          </div>
+
+          {/* Chart */}
+          <DashboardChart />
+        </div>
+      </Section>
+    </MotionWrapper>
   );
 }
