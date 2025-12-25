@@ -156,7 +156,7 @@ async function getJobs(searchParams: SearchParams) {
   }
 
   const res = await fetch(
-    `/api/jobs?${params.toString()}`,
+    `http://localhost:3000/api/jobs?${params.toString()}`,
     {
       headers: { Cookie: cookie },
       cache: "no-store",

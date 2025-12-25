@@ -11,7 +11,7 @@ async function getStats() {
   const headersList = await headers();
   const cookie = headersList.get("cookie") ?? "";
 
-  const res = await fetch("/api/dashboard", {
+  const res = await fetch("http://localhost:3000/api/dashboard", {
     headers: { Cookie: cookie },
     cache: "no-store",
   });
