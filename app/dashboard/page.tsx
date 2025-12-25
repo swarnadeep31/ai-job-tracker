@@ -6,12 +6,13 @@ import StatCard from "@/components/StatusCard";
 import DashboardChart from "@/components/DashboardChart";
 import MotionWrapper from "@/components/MontionWrapper";
 import Section from "@/components/Section";
+import { getBaseUrl } from "@/lib/getBaseUrl";
 
 async function getStats() {
   const headersList = await headers();
   const cookie = headersList.get("cookie") ?? "";
 
-  const res = await fetch(`${process.env.NEXTAUTH_URL}/api/dashboard`, {
+  const res = await fetch(`${getBaseUrl()}/api/dashboard`, {
     headers: { Cookie: cookie },
     cache: "no-store",
   });

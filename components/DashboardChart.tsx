@@ -1,5 +1,6 @@
 "use client";
 
+import { getBaseUrl } from "@/lib/getBaseUrl";
 import { useEffect, useState } from "react";
 import {
   LineChart,
@@ -17,7 +18,7 @@ export default function DashboardChart() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    fetch(`/api/dashboard/stats/${range}`)
+    fetch(`${getBaseUrl()}/api/dashboard/stats/${range}`)
       .then(res => res.json())
       .then(setData);
   }, [range]);

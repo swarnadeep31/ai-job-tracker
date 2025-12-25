@@ -137,6 +137,7 @@ import MotionWrapper from "@/components/MontionWrapper";
 import Section from "@/components/Section";
 import StatusBadge from "@/components/StatusBadge";
 import StatusSelect from "@/components/StatusSelect";
+import { getBaseUrl } from "@/lib/getBaseUrl";
 import { headers } from "next/headers";
 import Link from "next/link";
 
@@ -156,7 +157,7 @@ async function getJobs(searchParams: SearchParams) {
   }
 
   const res = await fetch(
-    `/api/jobs?${params.toString()}`,
+    `${getBaseUrl()}/api/jobs?${params.toString()}`,
     {
       headers: { Cookie: cookie },
       cache: "no-store",
