@@ -18,10 +18,23 @@ export default function DashboardChart() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    fetch(`${getBaseUrl()}/api/dashboard/stats/${range}`)
-      .then(res => res.json())
-      .then(setData);
-  }, [range]);
+  const fetchStats = async () => {
+    try {
+      const res = await fetch(`/api/dashboard/stats/${range}`);
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch stats");
+      }
+
+      const json = await res.json();
+      setData(json);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  fetchStats();
+}, [range]);
 
   return (
     <div className="rounded-xl border border-white/10 bg-white/5 p-6">

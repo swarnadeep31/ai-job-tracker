@@ -13,9 +13,18 @@ async function getStats() {
   const cookie = headersList.get("cookie") ?? "";
 
   const res = await fetch(`${getBaseUrl()}/api/dashboard`, {
-    headers: { Cookie: cookie },
+    method: "GET",
+    headers: {
+      Cookie: cookie,
+      "Content-Type": "application/json",
+    },
     cache: "no-store",
   });
+
+  if (!res.ok) {
+    console.error("Dashboard fetch failed:", res.status);
+    throw new Error("Failed to fetch dashboard stats");
+  }
 
   return res.json();
 }

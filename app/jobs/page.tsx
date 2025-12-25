@@ -157,12 +157,24 @@ async function getJobs(searchParams: SearchParams) {
   }
 
   const res = await fetch(
-    `${getBaseUrl()}/api/jobs?${params.toString()}`,
-    {
-      headers: { Cookie: cookie },
-      cache: "no-store",
-    }
-  );
+  `${getBaseUrl()}/api/jobs?${params.toString()}`,
+  {
+    method: "GET",
+    headers: {
+      Cookie: cookie, // forward auth
+      "Content-Type": "application/json",
+    },
+    cache: "no-store",
+  }
+);
+
+if (!res.ok) {
+  console.error("Failed to fetch jobs:", res.status);
+  throw new Error("Failed to fetch jobs");
+}
+
+const jobs = await res.json();
+return jobs;
 
   if (!res.ok) throw new Error("Failed to fetch jobs");
   return res.json();
