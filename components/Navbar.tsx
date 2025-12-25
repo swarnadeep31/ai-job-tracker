@@ -2,67 +2,111 @@
 
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
 
 export default function Navbar() {
-  const { data: session, status } = useSession();
-  const pathname = usePathname();
-
-  const linkClass = (path: string) =>
-    `text-sm transition ${
-      pathname === path
-        ? "text-white font-medium"
-        : "text-gray-400 hover:text-white"
-    }`;
+  const { data: session } = useSession();
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-white/10 bg-black/80 backdrop-blur">
-      <div className="mx-auto max-w-7xl px-6 h-16 grid grid-cols-3 items-center">
-        {/* LEFT: Brand */}
-        <div className="flex justify-start">
-          <Link href="/" className="text-xl font-bold text-white">
+    <header className="fixed top-4 left-0 right-0 z-50">
+      <motion.nav
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.4 }}
+        className="
+          mx-auto
+          max-w-6xl
+          rounded-full
+          border border-white/10
+          bg-black/70
+          backdrop-blur-xl
+          px-6
+          py-3
+          shadow-lg
+        "
+      >
+        <div className="flex items-center justify-between">
+          {/* Logo */}
+          <Link
+            href="/"
+            className="text-lg font-semibold text-white tracking-tight"
+          >
             JobTrackr
           </Link>
-        </div>
 
-        {/* CENTER: Navigation */}
-        <div className="flex justify-center gap-8">
-          <Link href="/" className={linkClass("/")}>
-            Home
-          </Link>
-
+          {/* Center Nav */}
           {session && (
-            <>
-              <Link href="/jobs" className={linkClass("/jobs")}>
-                Jobs
-              </Link>
-
-              <Link href="/dashboard" className={linkClass("/dashboard")}>
-                Dashboard
-              </Link>
-            </>
+            <div className="hidden md:flex items-center gap-8">
+              <NavItem href="/">Home</NavItem>
+              <NavItem href="/jobs">Jobs</NavItem>
+              <NavItem href="/dashboard">Dashboard</NavItem>
+            </div>
           )}
-        </div>
 
-        {/* RIGHT: Auth */}
-        <div className="flex justify-end">
-          {status === "loading" ? null : session ? (
-            <button
-              onClick={() => signOut()}
-              className="text-sm text-red-400 hover:text-red-300 transition"
-            >
-              Logout
-            </button>
-          ) : (
-            <button
-              onClick={() => signIn("google")}
-              className="rounded-md bg-white px-4 py-2 text-sm font-medium text-black hover:bg-gray-200 transition"
-            >
-              Login
-            </button>
-          )}
+          {/* Right CTA */}
+          <div className="flex items-center gap-3">
+            {session ? (
+              <button
+                onClick={() => signOut()}
+                className="
+                  rounded-full
+                  bg-white/10
+                  px-4 py-2
+                  text-sm
+                  text-white
+                  hover:bg-white/20
+                  transition
+                "
+              >
+                Logout
+              </button>
+            ) : (
+              <button
+                onClick={() => signIn("google")}
+                className="
+                  rounded-full
+                  bg-white
+                  px-5 py-2
+                  text-sm font-medium
+                  text-black
+                  hover:bg-gray-200
+                  transition
+                "
+              >
+                Start Today →
+              </button>
+            )}
+          </div>
         </div>
-      </div>
-    </nav>
+      </motion.nav>
+    </header>
+  );
+}
+
+/* ----------------------------- */
+/* Nav Item Component            */
+/* ----------------------------- */
+function NavItem({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <Link
+      href={href}
+      className="
+        relative
+        text-sm
+        text-gray-300
+        hover:text-white
+        transition
+        after:absolute
+        after:-bottom-1
+        after:left-0
+        after:h-0.5
+        after:w-0
+        after:bg-white
+        hover:after:w-full
+        after:transition-all
+      "
+    >
+      {children}
+    </Link>
   );
 }

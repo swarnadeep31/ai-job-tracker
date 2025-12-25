@@ -47,7 +47,7 @@ export default function RootLayout({
               },
             }}
           />
-          <main>{children}</main>
+          <main className="pt-28">{children}</main>
         </Provider>
       </body>
     </html>
