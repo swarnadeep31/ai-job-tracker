@@ -6,7 +6,7 @@ export default function AnimatedBackground() {
   return (
     <div className="fixed inset-0 -z-10 overflow-hidden">
       {/* Gradient base */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black via-zinc-900 to-black" />
+      <div className="absolute inset-0 bg-linear-to-br from-black via-zinc-900 to-black" />
 
       {/* Animated blobs */}
       <motion.div

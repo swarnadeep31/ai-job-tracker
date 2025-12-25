@@ -1,4 +1,5 @@
 import DeleteJobButton from "@/components/DeleteJobButton";
+import Footer from "@/components/Footer";
 import JobFilters from "@/components/JobFilters";
 
 import MotionWrapper from "@/components/MontionWrapper";
@@ -124,6 +125,7 @@ export default async function JobsPage({
             </div>
           )}
         </div>
+        
       </Section>
     </MotionWrapper>
   );

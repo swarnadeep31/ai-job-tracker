@@ -5,7 +5,7 @@ import Navbar from "@/components/Navbar";
 import Provider from "@/components/Providers";
 import { Toaster } from "react-hot-toast";
 import AnimatedBackground from "@/components/AnimatedBackground";
-import Footer from "@/components/Footer";
+
 
  // ✅ IMPORT ADDED
 
@@ -48,7 +48,6 @@ export default function RootLayout({
             }}
           />
           <main>{children}</main>
-          <Footer/>
         </Provider>
       </body>
     </html>
