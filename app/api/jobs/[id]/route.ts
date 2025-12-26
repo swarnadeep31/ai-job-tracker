@@ -33,3 +33,26 @@ export async function PATCH(req: Request, { params }: Params) {
 
   return NextResponse.json(job);
 }
+
+/* ------------------ DELETE ------------------ */
+export async function DELETE(req: Request, { params }: Params) {
+  const { id } = await params; // ✅ FIX (important)
+
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  await connectDB();
+
+  const deleted = await Job.findOneAndDelete({
+    _id: id,
+    userEmail: session.user.email,
+  });
+
+  if (!deleted) {
+    return NextResponse.json({ error: "Job not found" }, { status: 404 });
+  }
+
+  return NextResponse.json({ success: true });
+}
