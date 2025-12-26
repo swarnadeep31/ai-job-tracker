@@ -100,8 +100,9 @@ export async function GET(req: Request) {
     return NextResponse.json(jobs);
   } catch (error) {
     console.error("GET /api/jobs failed:", error);
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Internal server error", details: process.env.NODE_ENV === "development" ? errorMessage : undefined },
       { status: 500 }
     );
   }

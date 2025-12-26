@@ -156,28 +156,26 @@ async function getJobs(searchParams: SearchParams) {
     params.set("status", searchParams.status);
   }
 
-  const res = await fetch(
-  `${getBaseUrl()}/api/jobs?${params.toString()}`,
-  {
+  const baseUrl = getBaseUrl();
+  const url = `${baseUrl}/api/jobs?${params.toString()}`;
+  
+  const res = await fetch(url, {
     method: "GET",
     headers: {
       Cookie: cookie, // forward auth
       "Content-Type": "application/json",
     },
     cache: "no-store",
+  });
+
+  if (!res.ok) {
+    const errorText = await res.text().catch(() => "Unknown error");
+    console.error("Failed to fetch jobs:", res.status, errorText);
+    throw new Error(`Failed to fetch jobs: ${res.status}`);
   }
-);
 
-if (!res.ok) {
-  console.error("Failed to fetch jobs:", res.status);
-  throw new Error("Failed to fetch jobs");
-}
-
-const jobs = await res.json();
-return jobs;
-
-  if (!res.ok) throw new Error("Failed to fetch jobs");
-  return res.json();
+  const jobs = await res.json();
+  return jobs;
 }
 
 export default async function JobsPage({
