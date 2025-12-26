@@ -137,9 +137,10 @@ import MotionWrapper from "@/components/MontionWrapper";
 import Section from "@/components/Section";
 import StatusBadge from "@/components/StatusBadge";
 import StatusSelect from "@/components/StatusSelect";
-import { getBaseUrl } from "@/lib/getBaseUrl";
-import { headers } from "next/headers";
-import Link from "next/link";
+import { authOptions } from "@/lib/auth";
+import { connectDB } from "@/lib/db";
+import Job from "@/models/Job";
+import { getServerSession } from "next-auth";
 
 type SearchParams = {
   q?: string;
@@ -147,34 +148,32 @@ type SearchParams = {
 };
 
 async function getJobs(searchParams: SearchParams) {
-  const headersList = await headers();
-  const cookie = headersList.get("cookie") ?? "";
+  const session = await getServerSession(authOptions);
 
-  const params = new URLSearchParams();
-  if (searchParams.q) params.set("q", searchParams.q);
+  if (!session?.user?.email) {
+    throw new Error("Unauthorized");
+  }
+
+  await connectDB();
+
+  const query: any = {
+    userEmail: session.user.email,
+  };
+
+  // 🔍 Search by company OR role
+  if (searchParams.q) {
+    query.$or = [
+      { companyName: { $regex: searchParams.q, $options: "i" } },
+      { role: { $regex: searchParams.q, $options: "i" } },
+    ];
+  }
+
+  // 🎯 Status filter
   if (searchParams.status && searchParams.status !== "All") {
-    params.set("status", searchParams.status);
+    query.status = searchParams.status;
   }
 
-  const baseUrl = getBaseUrl();
-  const url = `${baseUrl}/api/jobs?${params.toString()}`;
-  
-  const res = await fetch(url, {
-    method: "GET",
-    headers: {
-      Cookie: cookie, // forward auth
-      "Content-Type": "application/json",
-    },
-    cache: "no-store",
-  });
-
-  if (!res.ok) {
-    const errorText = await res.text().catch(() => "Unknown error");
-    console.error("Failed to fetch jobs:", res.status, errorText);
-    throw new Error(`Failed to fetch jobs: ${res.status}`);
-  }
-
-  const jobs = await res.json();
+  const jobs = await Job.find(query).sort({ createdAt: -1 });
   return jobs;
 }
 
