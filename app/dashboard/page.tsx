@@ -1,36 +1,34 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { headers } from "next/headers";
+import { connectDB } from "@/lib/db";
+import Job from "@/models/Job";
 
 import StatCard from "@/components/StatusCard";
 import DashboardChart from "@/components/DashboardChart";
 import MotionWrapper from "@/components/MontionWrapper";
 import Section from "@/components/Section";
-import { getBaseUrl } from "@/lib/getBaseUrl";
 
 async function getStats() {
-  const headersList = await headers();
-  const cookie = headersList.get("cookie") ?? "";
+  const session = await getServerSession(authOptions);
 
-  const res = await fetch(`${getBaseUrl()}/api/dashboard`, {
-    method: "GET",
-    headers: {
-      Cookie: cookie,
-      "Content-Type": "application/json",
-    },
-    cache: "no-store",
-  });
-
-  if (!res.ok) {
-    console.error("Dashboard fetch failed:", res.status);
-    throw new Error("Failed to fetch dashboard stats");
+  if (!session?.user?.email) {
+    throw new Error("Unauthorized");
   }
 
-  return res.json();
+  await connectDB();
+
+  const jobs = await Job.find({ userEmail: session.user.email });
+
+  return {
+    total: jobs.length,
+    applied: jobs.filter(j => j.status === "Applied").length,
+    interview: jobs.filter(j => j.status === "Interview").length,
+    offer: jobs.filter(j => j.status === "Offer").length,
+    rejected: jobs.filter(j => j.status === "Rejected").length,
+  };
 }
 
 export default async function DashboardPage() {
-  await getServerSession(authOptions);
   const stats = await getStats();
 
   return (
