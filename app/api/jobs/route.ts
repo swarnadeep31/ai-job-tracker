@@ -23,41 +23,90 @@ export async function POST(req: Request) {
   return NextResponse.json(job, { status: 201 });
 }
 
+// export async function GET(req: Request) {
+//   const session = await getServerSession(authOptions);
+
+//   if (!session?.user?.email) {
+//     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+//   }
+
+//   const { searchParams } = new URL(req.url);
+
+//   const q = searchParams.get("q");        // search text
+//   const status = searchParams.get("status"); // filter
+
+//   await connectDB();
+
+//   const query: any = {
+//     userEmail: session.user.email,
+//   };
+
+//   // 🔍 Search by company OR role
+//   if (q) {
+//     query.$or = [
+//       { companyName: { $regex: q, $options: "i" } },
+//       { role: { $regex: q, $options: "i" } },
+//     ];
+//   }
+
+//   // 🎯 Status filter
+//   if (status && status !== "All") {
+//     query.status = status;
+//   }
+
+//   const jobs = await Job.find(query).sort({ createdAt: -1 });
+
+//   return NextResponse.json(jobs);
+// }
+
 export async function GET(req: Request) {
-  const session = await getServerSession(authOptions);
+  try {
+    const session = await getServerSession(authOptions);
 
-  if (!session?.user?.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!session?.user?.email) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    const { searchParams } = new URL(req.url);
+
+    const q = searchParams.get("q");
+    const status = searchParams.get("status");
+
+    await connectDB();
+
+    const query: any = {
+      userEmail: session.user.email,
+    };
+
+    // 🔍 Search
+    if (q) {
+      query.$or = [
+        { companyName: { $regex: q, $options: "i" } },
+        { role: { $regex: q, $options: "i" } },
+      ];
+    }
+
+    // 🎯 Status filter
+    if (status && status !== "All") {
+      query.status = status;
+    }
+
+    // ✅ THIS WAS MISSING
+    const jobs = await Job.find(query).sort({ createdAt: -1 });
+
+    return NextResponse.json(jobs);
+  } catch (error) {
+    console.error("GET /api/jobs failed:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
-
-  const { searchParams } = new URL(req.url);
-
-  const q = searchParams.get("q");        // search text
-  const status = searchParams.get("status"); // filter
-
-  await connectDB();
-
-  const query: any = {
-    userEmail: session.user.email,
-  };
-
-  // 🔍 Search by company OR role
-  if (q) {
-    query.$or = [
-      { companyName: { $regex: q, $options: "i" } },
-      { role: { $regex: q, $options: "i" } },
-    ];
-  }
-
-  // 🎯 Status filter
-  if (status && status !== "All") {
-    query.status = status;
-  }
-
-  const jobs = await Job.find(query).sort({ createdAt: -1 });
-
-  return NextResponse.json(jobs);
 }
+
 
 export async function PATCH(req: Request) {
   const session = await getServerSession(authOptions);
